@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accounts Manager</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div id="authBox" class="auth-box">
+    <h2>تسجيل الدخول</h2>
+    <input id="username" type="text" placeholder="اسم المستخدم" />
+    <input id="password" type="password" placeholder="كلمة المرور" />
+    <div class="auth-actions">
+      <button type="button" onclick="login()">دخول</button>
+      <button type="button" onclick="signup()">إنشاء حساب</button>
+    </div>
+  </div>
+
+  <div id="appBox" style="display: none;">
+    <div class="top-bar">
+      <button id="logoutBtn" type="button" onclick="logout()">تسجيل خروج</button>
+    </div>
+
+    <header>
+      <h1>Accounts Manager</h1>
+    </header>
+
+    <section class="dashboard">
+      <div class="card">
+        <h3>مجموع الداخل</h3>
+        <p id="insideTotal">0</p>
+      </div>
+
+      <div class="card">
+        <h3>مجموع الخارج</h3>
+        <p id="outsideTotal">0</p>
+      </div>
+
+      <div class="card">
+        <h3>إجمالي البطاقات</h3>
+        <p id="cardsTotal">0</p>
+      </div>
+    </section>
+
+    <section class="chart-wrap">
+      <canvas id="chart"></canvas>
+    </section>
+
+    <section class="panel">
+      <h2>إضافة مندوب</h2>
+      <input id="name" type="text" placeholder="اسم المندوب" />
+      <select id="type">
+        <option value="inside">داخل</option>
+        <option value="outside">خارج</option>
+      </select>
+      <button type="button" onclick="addAgent()">إضافة</button>
+    </section>
+
+    <section class="panel">
+      <input id="search" type="text" oninput="searchAgent()" placeholder="بحث عن مندوب" />
+    </section>
+
+    <ul id="agents"></ul>
+
+    <section class="panel actions">
+      <button type="button" onclick="resetAll()">تصفير الكل</button>
+    </section>
+
+    <section class="panel">
+      <h3>التقارير</h3>
+      <input id="monthPicker" type="month" />
+      <button type="button" onclick="generateReport()">📊 تقرير</button>
+      <button type="button" onclick="exportPDF()">📁 PDF</button>
+    </section>
+
+    <div id="reportBox" class="report-box"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

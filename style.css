@@ -1,0 +1,125 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #0d47a1;
+  color: white;
+  text-align: center;
+  margin: 0;
+}
+
+header {
+  background: #1565c0;
+  padding: 20px;
+}
+
+.top-bar {
+  padding: 10px;
+  text-align: left;
+}
+
+.dashboard {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 20px;
+}
+
+.card {
+  background: white;
+  color: black;
+  padding: 15px;
+  margin: 10px;
+  border-radius: 10px;
+  min-width: 150px;
+}
+
+.panel {
+  margin: 15px;
+}
+
+.chart-wrap {
+  width: 90%;
+  max-width: 700px;
+  height: 300px;
+  margin: 20px auto;
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+input,
+select,
+button {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 6px;
+  border: none;
+}
+
+button {
+  background: #42a5f5;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1e88e5;
+}
+
+ul {
+  padding: 0;
+}
+
+li {
+  background: white;
+  color: black;
+  margin: 10px auto;
+  padding: 15px;
+  border-radius: 10px;
+  list-style: none;
+  max-width: 400px;
+}
+
+.auth-box {
+  background: black;
+  padding: 20px;
+}
+
+.auth-actions {
+  margin-top: 10px;
+}
+
+.report-box {
+  background: white;
+  color: black;
+  margin: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.report-table th,
+.report-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.report-table thead {
+  background: #2196f3;
+  color: white;
+}
+
+.report-table tfoot {
+  background: #eee;
+  font-weight: bold;
+}
+
+.report-summary {
+  margin-top: 15px;
+  text-align: right;
+}
