@@ -29,8 +29,9 @@ header {
   color: black;
   padding: 15px;
   margin: 10px;
-  border-radius: 10px;
+  border-radius: 12px;
   min-width: 150px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
 .panel {
@@ -54,6 +55,7 @@ button {
   margin: 5px;
   border-radius: 6px;
   border: none;
+  font-size: 15px;
 }
 
 button {
@@ -77,12 +79,13 @@ li {
   padding: 15px;
   border-radius: 10px;
   list-style: none;
-  max-width: 400px;
+  max-width: 430px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
 .auth-box {
   background: black;
-  padding: 20px;
+  padding: 25px;
 }
 
 .auth-actions {
@@ -122,4 +125,69 @@ li {
 .report-summary {
   margin-top: 15px;
   text-align: right;
+}
+
+.agent-actions {
+  margin-top: 10px;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  z-index: 999;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  color: black;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.modal-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.modal-form {
+  margin: 15px 0;
+}
+
+.modal-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.modal-form input {
+  width: calc(100% - 20px);
+  border: 1px solid #ccc;
+}
+
+.modal-actions {
+  margin-top: 15px;
+}
+
+.cancel-btn {
+  background: #777;
+}
+
+.cancel-btn:hover {
+  background: #555;
 }

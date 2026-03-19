@@ -11,6 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
+  <!-- تسجيل الدخول -->
   <div id="authBox" class="auth-box">
     <h2>تسجيل الدخول</h2>
     <input id="username" type="text" placeholder="اسم المستخدم" />
@@ -21,9 +22,10 @@
     </div>
   </div>
 
-  <div id="appBox" style="display: none;">
+  <!-- التطبيق -->
+  <div id="appBox" class="app-box" style="display:none;">
     <div class="top-bar">
-      <button id="logoutBtn" type="button" onclick="logout()">تسجيل خروج</button>
+      <button type="button" onclick="logout()">تسجيل خروج</button>
     </div>
 
     <header>
@@ -62,7 +64,7 @@
     </section>
 
     <section class="panel">
-      <input id="search" type="text" oninput="searchAgent()" placeholder="بحث عن مندوب" />
+      <input id="search" type="text" placeholder="بحث عن مندوب" oninput="searchAgent()" />
     </section>
 
     <ul id="agents"></ul>
@@ -72,13 +74,36 @@
     </section>
 
     <section class="panel">
-      <h3>التقارير</h3>
+      <h3>التقارير الشهرية</h3>
       <input id="monthPicker" type="month" />
       <button type="button" onclick="generateReport()">📊 تقرير</button>
       <button type="button" onclick="exportPDF()">📁 PDF</button>
     </section>
 
     <div id="reportBox" class="report-box"></div>
+  </div>
+
+  <!-- نافذة اختيار نوع العملية -->
+  <div id="transactionModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="modalAgentName">إضافة عملية</h3>
+
+      <div class="modal-buttons">
+        <button type="button" onclick="selectTransactionType('cards')">🎫 بطاقات</button>
+        <button type="button" onclick="selectTransactionType('money')">💰 مبلغ مباشر</button>
+        <button type="button" onclick="selectTransactionType('tip')">🎁 إكرامية</button>
+      </div>
+
+      <div class="modal-form">
+        <label id="transactionLabel" for="transactionValue">القيمة</label>
+        <input id="transactionValue" type="number" min="1" placeholder="أدخل القيمة" />
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" onclick="saveTransaction()">حفظ</button>
+        <button type="button" class="cancel-btn" onclick="closeTransactionModal()">إلغاء</button>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>

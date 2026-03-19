@@ -3,6 +3,9 @@ let currentUser = null;
 let agents = [];
 let chartInstance = null;
 
+let selectedAgentIndex = null;
+let selectedTransactionType = null;
+
 function saveUsers() {
   localStorage.setItem("users", JSON.stringify(users));
 }
@@ -97,6 +100,7 @@ function addAgent() {
     type: type,
     cards: 0,
     money: 0,
+    tips: 0,
     history: []
   });
 
@@ -105,36 +109,109 @@ function addAgent() {
   render();
 }
 
-function addCards(index) {
+function openTransactionModal(index) {
   if (!currentUser) {
     alert("سجل الدخول أولاً");
     return;
   }
 
-  const value = prompt("عدد البطاقات");
-  if (value === null) return;
+  selectedAgentIndex = index;
+  selectedTransactionType = null;
 
-  const cards = Number(value);
+  const agent = agents[index];
+  document.getElementById("modalAgentName").textContent = `إضافة عملية للمندوب: ${agent.name}`;
+  document.getElementById("transactionLabel").textContent = "اختر نوع العملية أولاً";
+  document.getElementById("transactionValue").value = "";
+  document.getElementById("transactionValue").placeholder = "أدخل القيمة";
+  document.getElementById("transactionModal").classList.remove("hidden");
+}
 
-  if (!Number.isFinite(cards) || cards <= 0) {
-    alert("اكتب عدداً صحيحاً أكبر من صفر");
+function closeTransactionModal() {
+  selectedAgentIndex = null;
+  selectedTransactionType = null;
+  document.getElementById("transactionValue").value = "";
+  document.getElementById("transactionModal").classList.add("hidden");
+}
+
+function selectTransactionType(type) {
+  selectedTransactionType = type;
+  const label = document.getElementById("transactionLabel");
+  const input = document.getElementById("transactionValue");
+
+  if (type === "cards") {
+    label.textContent = "عدد البطاقات";
+    input.placeholder = "أدخل عدد البطاقات";
+  } else if (type === "money") {
+    label.textContent = "المبلغ المباشر";
+    input.placeholder = "أدخل المبلغ";
+  } else if (type === "tip") {
+    label.textContent = "الإكرامية";
+    input.placeholder = "أدخل الإكرامية";
+  }
+
+  input.focus();
+}
+
+function saveTransaction() {
+  if (selectedAgentIndex === null) {
+    alert("لم يتم اختيار مندوب");
     return;
   }
 
-  const agent = agents[index];
-  const price = agent.type === "inside" ? 750 : 1500;
-  const money = cards * price;
+  if (!selectedTransactionType) {
+    alert("اختر نوع العملية");
+    return;
+  }
 
-  agent.cards += cards;
-  agent.money += money;
-  agent.history.push({
-    cards: cards,
-    money: money,
-    date: new Date().toISOString()
-  });
+  const value = Number(document.getElementById("transactionValue").value);
+
+  if (!Number.isFinite(value) || value <= 0) {
+    alert("أدخل قيمة صحيحة أكبر من صفر");
+    return;
+  }
+
+  const agent = agents[selectedAgentIndex];
+
+  if (selectedTransactionType === "cards") {
+    const price = agent.type === "inside" ? 750 : 1500;
+    const money = value * price;
+
+    agent.cards += value;
+    agent.money += money;
+
+    agent.history.push({
+      operationType: "cards",
+      cards: value,
+      money: money,
+      tip: 0,
+      date: new Date().toISOString()
+    });
+  } else if (selectedTransactionType === "money") {
+    agent.money += value;
+
+    agent.history.push({
+      operationType: "money",
+      cards: 0,
+      money: value,
+      tip: 0,
+      date: new Date().toISOString()
+    });
+  } else if (selectedTransactionType === "tip") {
+    agent.tips = Number(agent.tips || 0) + value;
+    agent.money += value;
+
+    agent.history.push({
+      operationType: "tip",
+      cards: 0,
+      money: value,
+      tip: value,
+      date: new Date().toISOString()
+    });
+  }
 
   save();
   render();
+  closeTransactionModal();
 }
 
 function resetAgent(index) {
@@ -146,6 +223,7 @@ function resetAgent(index) {
 
   agent.cards = 0;
   agent.money = 0;
+  agent.tips = 0;
   agent.history = [];
 
   save();
@@ -164,10 +242,18 @@ function deleteAgent(index) {
   render();
 }
 
+function getOperationLabel(item) {
+  if (item.operationType === "cards") return "بطاقات";
+  if (item.operationType === "money") return "مبلغ مباشر";
+  if (item.operationType === "tip") return "إكرامية";
+  return "عملية";
+}
+
 function showStatement(index) {
   const agent = agents[index];
   let totalCards = 0;
   let totalMoney = 0;
+  let totalTips = 0;
 
   let text = `كشف حساب: ${agent.name}\n\n`;
 
@@ -179,16 +265,26 @@ function showStatement(index) {
   agent.history.forEach((item, i) => {
     totalCards += Number(item.cards || 0);
     totalMoney += Number(item.money || 0);
+    totalTips += Number(item.tip || 0);
 
     const displayDate = new Date(item.date).toLocaleString("ar-IQ");
+    const label = getOperationLabel(item);
 
     text += `${i + 1}) ${displayDate}\n`;
-    text += `البطاقات: ${item.cards}\n`;
-    text += `المبلغ: ${item.money}\n\n`;
+    text += `النوع: ${label}\n`;
+    text += `البطاقات: ${item.cards || 0}\n`;
+    text += `المبلغ: ${item.money || 0}\n`;
+
+    if (Number(item.tip || 0) > 0) {
+      text += `الإكرامية: ${item.tip}\n`;
+    }
+
+    text += `\n`;
   });
 
   text += "------------------------\n";
   text += `مجموع البطاقات: ${totalCards}\n`;
+  text += `مجموع الإكراميات: ${totalTips}\n`;
   text += `مجموع المبلغ: ${totalMoney}`;
 
   alert(text);
@@ -202,6 +298,7 @@ function exportStatementPDF(index) {
   let y = 15;
   let totalCards = 0;
   let totalMoney = 0;
+  let totalTips = 0;
 
   doc.setFontSize(16);
   doc.text(`Statement - ${agent.name}`, 10, y);
@@ -217,30 +314,43 @@ function exportStatementPDF(index) {
   doc.setFontSize(11);
 
   agent.history.forEach((item, i) => {
-    if (y > 260) {
+    if (y > 250) {
       doc.addPage();
       y = 15;
     }
 
     const displayDate = new Date(item.date).toLocaleString("ar-IQ");
+    const label = getOperationLabel(item);
 
     doc.text(`${i + 1}) ${displayDate}`, 10, y);
     y += 6;
-    doc.text(`Cards: ${item.cards}`, 10, y);
+    doc.text(`Type: ${label}`, 10, y);
     y += 6;
-    doc.text(`Money: ${item.money}`, 10, y);
-    y += 10;
+    doc.text(`Cards: ${item.cards || 0}`, 10, y);
+    y += 6;
+    doc.text(`Money: ${item.money || 0}`, 10, y);
+    y += 6;
+
+    if (Number(item.tip || 0) > 0) {
+      doc.text(`Tip: ${item.tip}`, 10, y);
+      y += 6;
+    }
+
+    y += 4;
 
     totalCards += Number(item.cards || 0);
     totalMoney += Number(item.money || 0);
+    totalTips += Number(item.tip || 0);
   });
 
-  if (y > 250) {
+  if (y > 240) {
     doc.addPage();
     y = 15;
   }
 
   doc.text(`Total Cards: ${totalCards}`, 10, y);
+  y += 8;
+  doc.text(`Total Tips: ${totalTips}`, 10, y);
   y += 8;
   doc.text(`Total Money: ${totalMoney}`, 10, y);
 
@@ -307,13 +417,16 @@ function render() {
       <b>${agent.name}</b><br>
       النوع: ${agent.type === "inside" ? "داخل" : "خارج"}<br>
       البطاقات: ${agent.cards}<br>
-      المبلغ: ${agent.money}<br><br>
+      الإكراميات: ${agent.tips || 0}<br>
+      المبلغ: ${agent.money}<br>
 
-      <button type="button" onclick="addCards(${index})">➕ بطاقات</button>
-      <button type="button" onclick="showStatement(${index})">📊 كشف</button>
-      <button type="button" onclick="exportStatementPDF(${index})">📁 PDF</button>
-      <button type="button" onclick="resetAgent(${index})">🔄 تصفير</button>
-      <button type="button" onclick="deleteAgent(${index})">🗑 حذف</button>
+      <div class="agent-actions">
+        <button type="button" onclick="openTransactionModal(${index})">➕ إضافة</button>
+        <button type="button" onclick="showStatement(${index})">📊 كشف</button>
+        <button type="button" onclick="exportStatementPDF(${index})">📁 PDF</button>
+        <button type="button" onclick="resetAgent(${index})">🔄 تصفير</button>
+        <button type="button" onclick="deleteAgent(${index})">🗑 حذف</button>
+      </div>
     `;
     agentsList.appendChild(li);
   });
@@ -350,10 +463,12 @@ function generateReport() {
 
   let totalCards = 0;
   let totalMoney = 0;
+  let totalTips = 0;
 
   const reportData = agents.map((agent) => {
     let agentCards = 0;
     let agentMoney = 0;
+    let agentTips = 0;
 
     (agent.history || []).forEach((item) => {
       const d = new Date(item.date);
@@ -361,15 +476,18 @@ function generateReport() {
       if (!isNaN(d) && d.getFullYear() === year && d.getMonth() === month) {
         agentCards += Number(item.cards || 0);
         agentMoney += Number(item.money || 0);
+        agentTips += Number(item.tip || 0);
       }
     });
 
     totalCards += agentCards;
     totalMoney += agentMoney;
+    totalTips += agentTips;
 
     return {
       name: agent.name,
       cards: agentCards,
+      tips: agentTips,
       money: agentMoney
     };
   });
@@ -387,6 +505,7 @@ function generateReport() {
           <th>#</th>
           <th>المندوب</th>
           <th>عدد البطاقات</th>
+          <th>الإكراميات</th>
           <th>المبلغ</th>
           <th>النسبة</th>
         </tr>
@@ -401,6 +520,7 @@ function generateReport() {
         <td>${i + 1}</td>
         <td>${row.name}</td>
         <td>${row.cards}</td>
+        <td>${row.tips}</td>
         <td>${row.money}</td>
         <td>${percent}%</td>
       </tr>
@@ -413,6 +533,7 @@ function generateReport() {
         <tr>
           <td colspan="2">المجموع</td>
           <td>${totalCards}</td>
+          <td>${totalTips}</td>
           <td>${totalMoney}</td>
           <td>100%</td>
         </tr>
@@ -441,6 +562,7 @@ function exportPDF() {
 
   let totalCards = 0;
   let totalMoney = 0;
+  let totalTips = 0;
 
   if (!monthValue) {
     alert("اختر الشهر أولاً");
@@ -454,6 +576,7 @@ function exportPDF() {
   agents.forEach((agent) => {
     let agentCards = 0;
     let agentMoney = 0;
+    let agentTips = 0;
 
     (agent.history || []).forEach((item) => {
       const d = new Date(item.date);
@@ -461,10 +584,11 @@ function exportPDF() {
       if (!isNaN(d) && d.getFullYear() === year && d.getMonth() === month) {
         agentCards += Number(item.cards || 0);
         agentMoney += Number(item.money || 0);
+        agentTips += Number(item.tip || 0);
       }
     });
 
-    if (y > 260) {
+    if (y > 245) {
       doc.addPage();
       y = 15;
     }
@@ -473,19 +597,24 @@ function exportPDF() {
     y += 6;
     doc.text(`Cards: ${agentCards}`, 10, y);
     y += 6;
+    doc.text(`Tips: ${agentTips}`, 10, y);
+    y += 6;
     doc.text(`Money: ${agentMoney}`, 10, y);
     y += 10;
 
     totalCards += agentCards;
     totalMoney += agentMoney;
+    totalTips += agentTips;
   });
 
-  if (y > 250) {
+  if (y > 235) {
     doc.addPage();
     y = 15;
   }
 
   doc.text(`Total Cards: ${totalCards}`, 10, y);
+  y += 8;
+  doc.text(`Total Tips: ${totalTips}`, 10, y);
   y += 8;
   doc.text(`Total Money: ${totalMoney}`, 10, y);
 
