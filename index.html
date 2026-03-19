@@ -1,111 +1,87 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Accounts Manager</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accounts Manager</title>
 
-  <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <!-- تسجيل الدخول -->
-  <div id="authBox" class="auth-box">
-    <h2>تسجيل الدخول</h2>
-    <input id="username" type="text" placeholder="اسم المستخدم" />
-    <input id="password" type="password" placeholder="كلمة المرور" />
-    <div class="auth-actions">
-      <button type="button" onclick="login()">دخول</button>
-      <button type="button" onclick="signup()">إنشاء حساب</button>
-    </div>
-  </div>
 
-  <!-- التطبيق -->
-  <div id="appBox" class="app-box" style="display:none;">
-    <div class="top-bar">
-      <button type="button" onclick="logout()">تسجيل خروج</button>
-    </div>
+<!-- تسجيل -->
+<div id="authBox">
+  <h2>تسجيل الدخول</h2>
+  <input id="username" placeholder="اسم المستخدم">
+  <input id="password" type="password" placeholder="كلمة المرور">
+  <button onclick="login()">دخول</button>
+  <button onclick="signup()">إنشاء حساب</button>
+</div>
 
-    <header>
-      <h1>Accounts Manager</h1>
-    </header>
+<!-- التطبيق -->
+<div id="appBox" style="display:none;">
 
-    <section class="dashboard">
-      <div class="card">
-        <h3>مجموع الداخل</h3>
-        <p id="insideTotal">0</p>
-      </div>
+<header>
+<h1>Accounts Manager</h1>
+<button onclick="logout()">تسجيل خروج</button>
+</header>
 
-      <div class="card">
-        <h3>مجموع الخارج</h3>
-        <p id="outsideTotal">0</p>
-      </div>
+<section class="dashboard">
+<div class="card">داخل: <span id="insideTotal">0</span></div>
+<div class="card">خارج: <span id="outsideTotal">0</span></div>
+<div class="card">بطاقات: <span id="cardsTotal">0</span></div>
+</section>
 
-      <div class="card">
-        <h3>إجمالي البطاقات</h3>
-        <p id="cardsTotal">0</p>
-      </div>
-    </section>
+<canvas id="chart"></canvas>
 
-    <section class="chart-wrap">
-      <canvas id="chart"></canvas>
-    </section>
+<section>
+<input id="name" placeholder="اسم المندوب">
+<select id="type">
+<option value="inside">داخل</option>
+<option value="outside">خارج</option>
+</select>
+<button onclick="addAgent()">إضافة</button>
+</section>
 
-    <section class="panel">
-      <h2>إضافة مندوب</h2>
-      <input id="name" type="text" placeholder="اسم المندوب" />
-      <select id="type">
-        <option value="inside">داخل</option>
-        <option value="outside">خارج</option>
-      </select>
-      <button type="button" onclick="addAgent()">إضافة</button>
-    </section>
+<input id="search" oninput="searchAgent()" placeholder="بحث">
 
-    <section class="panel">
-      <input id="search" type="text" placeholder="بحث عن مندوب" oninput="searchAgent()" />
-    </section>
+<ul id="agents"></ul>
 
-    <ul id="agents"></ul>
+<button onclick="resetAll()">تصفير الكل</button>
 
-    <section class="panel actions">
-      <button type="button" onclick="resetAll()">تصفير الكل</button>
-    </section>
+<hr>
 
-    <section class="panel">
-      <h3>التقارير الشهرية</h3>
-      <input id="monthPicker" type="month" />
-      <button type="button" onclick="generateReport()">📊 تقرير</button>
-      <button type="button" onclick="exportPDF()">📁 PDF</button>
-    </section>
+<h3>التقارير</h3>
+<input type="month" id="monthPicker">
+<button onclick="generateReport()">عرض التقرير</button>
+<button onclick="exportPDF()">PDF</button>
 
-    <div id="reportBox" class="report-box"></div>
-  </div>
+<div id="reportBox"></div>
 
-  <!-- نافذة اختيار نوع العملية -->
-  <div id="transactionModal" class="modal hidden">
-    <div class="modal-content">
-      <h3 id="modalAgentName">إضافة عملية</h3>
+</div>
 
-      <div class="modal-buttons">
-        <button type="button" onclick="selectTransactionType('cards')">🎫 بطاقات</button>
-        <button type="button" onclick="selectTransactionType('money')">💰 مبلغ مباشر</button>
-        <button type="button" onclick="selectTransactionType('tip')">🎁 إكرامية</button>
-      </div>
+<!-- مودال -->
+<div id="modal" class="hidden">
+<div class="modalBox">
 
-      <div class="modal-form">
-        <label id="transactionLabel" for="transactionValue">القيمة</label>
-        <input id="transactionValue" type="number" min="1" placeholder="أدخل القيمة" />
-      </div>
+<h3 id="modalTitle"></h3>
 
-      <div class="modal-actions">
-        <button type="button" onclick="saveTransaction()">حفظ</button>
-        <button type="button" class="cancel-btn" onclick="closeTransactionModal()">إلغاء</button>
-      </div>
-    </div>
-  </div>
+<button onclick="chooseType('cards')">بطاقات</button>
+<button onclick="chooseType('money')">مبلغ</button>
+<button onclick="chooseType('tip')">إكرامية</button>
+<button onclick="chooseType('debt')">سلفة</button>
 
-  <script src="app.js"></script>
+<input id="valueInput" type="number" placeholder="القيمة">
+
+<button onclick="saveTransaction()">حفظ</button>
+<button onclick="closeModal()">إغلاق</button>
+
+</div>
+</div>
+
+<script src="app.js"></script>
+
 </body>
 </html>

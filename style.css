@@ -1,193 +1,84 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #0d47a1;
-  color: white;
-  text-align: center;
-  margin: 0;
+body{
+font-family:Arial;
+background:#0d47a1;
+color:white;
+text-align:center;
+margin:0;
 }
 
-header {
-  background: #1565c0;
-  padding: 20px;
+header{
+background:#1565c0;
+padding:15px;
 }
 
-.top-bar {
-  padding: 10px;
-  text-align: left;
+.card{
+background:white;
+color:black;
+padding:10px;
+margin:10px;
+border-radius:10px;
+display:inline-block;
 }
 
-.dashboard {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin: 20px;
+input,select,button{
+padding:10px;
+margin:5px;
+border:none;
+border-radius:6px;
 }
 
-.card {
-  background: white;
-  color: black;
-  padding: 15px;
-  margin: 10px;
-  border-radius: 12px;
-  min-width: 150px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+button{
+background:#42a5f5;
+color:white;
+cursor:pointer;
 }
 
-.panel {
-  margin: 15px;
+li{
+background:white;
+color:black;
+margin:10px;
+padding:10px;
+border-radius:10px;
+list-style:none;
 }
 
-.chart-wrap {
-  width: 90%;
-  max-width: 700px;
-  height: 300px;
-  margin: 20px auto;
-  background: white;
-  border-radius: 12px;
-  padding: 10px;
-}
-
-input,
-select,
-button {
-  padding: 10px;
-  margin: 5px;
-  border-radius: 6px;
-  border: none;
-  font-size: 15px;
-}
-
-button {
-  background: #42a5f5;
-  color: white;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #1e88e5;
-}
-
-ul {
-  padding: 0;
-}
-
-li {
-  background: white;
-  color: black;
-  margin: 10px auto;
-  padding: 15px;
-  border-radius: 10px;
-  list-style: none;
-  max-width: 430px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-}
-
-.auth-box {
-  background: black;
-  padding: 25px;
-}
-
-.auth-actions {
-  margin-top: 10px;
-}
-
-.report-box {
-  background: white;
-  color: black;
-  margin: 20px;
-  padding: 15px;
-  border-radius: 10px;
-  overflow-x: auto;
-}
-
-.report-table {
-  width: 100%;
-  border-collapse: collapse;
+.report-table{
+width:100%;
+border-collapse:collapse;
+background:white;
+color:black;
 }
 
 .report-table th,
-.report-table td {
-  border: 1px solid #ccc;
-  padding: 8px;
+.report-table td{
+border:1px solid #ccc;
+padding:8px;
 }
 
-.report-table thead {
-  background: #2196f3;
-  color: white;
+.report-table thead{
+background:#1565c0;
+color:white;
 }
 
-.report-table tfoot {
-  background: #eee;
-  font-weight: bold;
+#modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:flex;
+justify-content:center;
+align-items:center;
 }
 
-.report-summary {
-  margin-top: 15px;
-  text-align: right;
+.hidden{
+display:none;
 }
 
-.agent-actions {
-  margin-top: 10px;
-}
-
-/* Modal */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-  z-index: 999;
-}
-
-.hidden {
-  display: none;
-}
-
-.modal-content {
-  background: white;
-  color: black;
-  width: 100%;
-  max-width: 420px;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-}
-
-.modal-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.modal-form {
-  margin: 15px 0;
-}
-
-.modal-form label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.modal-form input {
-  width: calc(100% - 20px);
-  border: 1px solid #ccc;
-}
-
-.modal-actions {
-  margin-top: 15px;
-}
-
-.cancel-btn {
-  background: #777;
-}
-
-.cancel-btn:hover {
-  background: #555;
+.modalBox{
+background:white;
+color:black;
+padding:20px;
+border-radius:10px;
 }
